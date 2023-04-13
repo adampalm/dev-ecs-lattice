@@ -404,7 +404,7 @@ Resources:
               StackName: !Sub ${AWS::StackName}-lattice-ingress-cluster
               ChangeSetName: !Sub ${AWS::StackName}-lattice-ingress-cluster-cset
               TemplatePath: SourceArtifact::cloudformation/ecs/cluster.yaml
-              TemplateConfiguration: SourceArtifact::cloudformation/ecs/cluster-template-configuration.json
+              # TemplateConfiguration: SourceArtifact::cloudformation/ecs/cluster-template-configuration.json
               ParameterOverrides: !Sub |
                 {
                   "VpcId": "${VPC}",
