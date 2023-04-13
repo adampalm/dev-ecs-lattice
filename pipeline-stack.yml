@@ -404,15 +404,13 @@ Resources:
               StackName: !Sub ${AWS::StackName}-lattice-ingress-cluster
               ChangeSetName: !Sub ${AWS::StackName}-lattice-ingress-cluster-cset
               TemplatePath: SourceArtifact::cloudformation/ecs/cluster.yaml
-              # TemplateConfiguration: SourceArtifact::cloudformation/ecs/cluster-template-configuration.json
               ParameterOverrides: !Sub |
                 {
                   "VpcId": "${VPC}",
                   "VpcCidr": "${VpcCidr}",
                   "PrivateSubnet1": "${PrivateSubnet1}",
                   "PrivateSubnet2": "${PrivateSubnet2}",
-                  "PrivateSubnet3": "${PrivateSubnet3}",
-                  "NginxImage": "{NginxBuild.image}"
+                  "PrivateSubnet3": "${PrivateSubnet3}"
                 }
             RunOrder: 1
           - Name: ExecuteChangeSet

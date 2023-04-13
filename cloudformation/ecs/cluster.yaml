@@ -3,21 +3,27 @@ Parameters:
   VpcId:
     Description: The VPC id
     Type: String
+    Default: ""
   VpcCidr:
     Description: The VPC CIDR block
     Type: String
+    Default: ""
   PrivateSubnet1:
     Description: The Private Subnet 1 id
     Type: String
+    Default: ""
   PrivateSubnet2:
     Description: The Private Subnet 2 id
     Type: String
+    Default: ""
   PrivateSubnet3:
     Description: The Private Subnet 3 id
     Type: String
+    Default: ""
   NginxImage:
     Description: Container image
     Type: String
+    Default: ""
 Resources:
   NginxCluster:
     Type: 'AWS::ECS::Cluster'
