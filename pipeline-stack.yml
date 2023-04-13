@@ -412,7 +412,7 @@ Resources:
                   "PrivateSubnet1": "${PrivateSubnet1}",
                   "PrivateSubnet2": "${PrivateSubnet2}",
                   "PrivateSubnet3": "${PrivateSubnet3}",
-                  "NginxImage": "#{NginxBuild.image}",
+                  "NginxImage": "{NginxBuild.image}"
                 }
             RunOrder: 1
           - Name: ExecuteChangeSet
