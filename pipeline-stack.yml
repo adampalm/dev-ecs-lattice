@@ -54,9 +54,6 @@ Parameters:
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
 
 
-Conditions:
-
-
 Resources:
   # Pipeline #
 
@@ -306,7 +303,7 @@ Resources:
       Artifacts: 
         Type: CODEPIPELINE
       Environment: 
-        Type: LINUX_CONTAINER
+        Type: ARM_CONTAINER
         Image: aws/codebuild/amazonlinux2-aarch64-standard:2.0
         ComputeType: BUILD_GENERAL1_SMALL
         PrivilegedMode: true
@@ -525,6 +522,8 @@ Resources:
       VpcId: !Ref VPC
 
   PublicSubnetDefaultIPv4Route:
+    DependsOn:
+      - InternetGatewayAttachment
     Type: AWS::EC2::Route
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
