@@ -61,6 +61,7 @@ Parameters:
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
 
 Resources:
+
   # Pipeline #
 
   LatticeIngressECRRepo:
@@ -411,6 +412,9 @@ Resources:
                   "PrivateSubnet1": "${PrivateSubnet1}",
                   "PrivateSubnet2": "${PrivateSubnet2}",
                   "PrivateSubnet3": "${PrivateSubnet3}",
+                  "PublicSubnet1": "${PublicSubnet1}",
+                  "PublicSubnet2": "${PublicSubnet2}",
+                  "PublicSubnet3": "${PublicSubnet3}",
                   "NginxImage": "#{NginxBuild.image}"
                 }
             RunOrder: 1
@@ -495,6 +499,7 @@ Resources:
       InternetGatewayId: !Ref InternetGateway
 
   # Public Subnets
+
   PublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
