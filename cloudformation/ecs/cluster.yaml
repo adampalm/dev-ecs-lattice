@@ -25,6 +25,10 @@ Parameters:
     Type: String
     Default: ""
 Resources:
+  NginxLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /${AWS::StackName}/${NginxCluster}
   NginxCluster:
     Type: 'AWS::ECS::Cluster'
     Properties:
@@ -44,6 +48,12 @@ Resources:
           PortMappings:
             - ContainerPort: 443
               Protocol: tcp
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref NginxLogGroup
+              awslogs-stream-prefix: lattice-ingress
       Cpu: 1024
       Memory: 2048
       RequiresCompatibilities:
@@ -86,7 +96,6 @@ Resources:
       Tags:
         - Key: Name
           Value: Nginx SG
-
   NginxTaskExecRole:
     Type: 'AWS::IAM::Role'
     Properties:
