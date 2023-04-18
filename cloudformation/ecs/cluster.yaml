@@ -1,69 +1,49 @@
 AWSTemplateFormatVersion: 2010-09-09
 Parameters:
-  
   VpcId:
     Description: The VPC id
     Type: String
-    Default: ""
-  
+    Default: ''
   VpcCidr:
     Description: The VPC CIDR block
     Type: String
-    Default: ""
-  
+    Default: ''
   PrivateSubnet1:
     Description: The Private Subnet 1 id
     Type: String
-    Default: ""
-  
+    Default: ''
   PrivateSubnet2:
     Description: The Private Subnet 2 id
     Type: String
-    Default: ""
-  
+    Default: ''
   PrivateSubnet3:
     Description: The Private Subnet 3 id
     Type: String
-    Default: ""
- 
+    Default: ''
   PublicSubnet1:
     Description: The Public Subnet 1 id
     Type: String
-    Default: ""
-  
+    Default: ''
   PublicSubnet2:
     Description: The Public Subnet 2 id
     Type: String
-    Default: ""
-  
+    Default: ''
   PublicSubnet3:
     Description: The Public Subnet 3 id
     Type: String
-    Default: ""
-  
+    Default: ''
   NginxImage:
     Description: Container image
     Type: String
-    Default: ""
-
+    Default: ''
 Resources:
-
-##
-# Logging
-##
-
   NginxLogGroup:
-    Type: AWS::Logs::LogGroup
+    Type: 'AWS::Logs::LogGroup'
     Properties:
-      LogGroupName: !Sub /${NginxCluster}
-
-##
-# ELB
-##
-
+      LogGroupName: !Sub '/${NginxCluster}'
   NginxExtNLBTGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties: 
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
       HealthCheckIntervalSeconds: 5
       HealthCheckTimeoutSeconds: 2
       HealthyThresholdCount: 3
@@ -73,31 +53,28 @@ Resources:
       TargetType: ip
       UnhealthyThresholdCount: 3
       VpcId: !Ref VpcId
-
   NginxExtNLB:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties: 
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+    Properties:
       IpAddressType: ipv4
       Scheme: internet-facing
-      Subnets: 
+      Subnets:
         - !Ref PublicSubnet1
         - !Ref PublicSubnet2
         - !Ref PublicSubnet3
       Type: network
-
   NginxExtNLBListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties: 
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
       DefaultActions:
         - TargetGroupArn: !Ref NginxExtNLBTGroup
           Type: forward
       LoadBalancerArn: !Ref NginxExtNLB
       Port: 443
       Protocol: TCP
-
   NginxIntNLBTGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties: 
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
       HealthCheckIntervalSeconds: 5
       HealthCheckTimeoutSeconds: 2
       HealthyThresholdCount: 3
@@ -107,32 +84,25 @@ Resources:
       TargetType: ip
       UnhealthyThresholdCount: 3
       VpcId: !Ref VpcId
-
   NginxIntNLB:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties: 
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+    Properties:
       IpAddressType: ipv4
       Scheme: internal
-      Subnets: 
+      Subnets:
         - !Ref PrivateSubnet1
         - !Ref PrivateSubnet2
         - !Ref PrivateSubnet3
       Type: network
-
   NginxIntNLBListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
     Properties:
       DefaultActions:
         - TargetGroupArn: !Ref NginxIntNLBTGroup
-          Type: forward 
+          Type: forward
       LoadBalancerArn: !Ref NginxIntNLB
       Port: 443
       Protocol: TCP
-
-##
-# ECS
-##
-
   NginxCluster:
     Type: 'AWS::ECS::Cluster'
     Properties:
@@ -141,7 +111,6 @@ Resources:
       ClusterSettings:
         - Name: containerInsights
           Value: enabled
-    
   NginxTask:
     Type: 'AWS::ECS::TaskDefinition'
     Properties:
@@ -152,11 +121,11 @@ Resources:
           Name: Nginx
           PortMappings:
             - ContainerPort: 443
-              Protocol: TCP
+              Protocol: tcp
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-region: !Ref AWS::Region
+              awslogs-region: !Ref 'AWS::Region'
               awslogs-group: !Ref NginxLogGroup
               awslogs-stream-prefix: lattice-ingress
       Cpu: 1024
@@ -166,7 +135,6 @@ Resources:
       RuntimePlatform:
         CpuArchitecture: ARM64
         OperatingSystemFamily: LINUX
-
   NginxService:
     Type: 'AWS::ECS::Service'
     DependsOn:
@@ -186,19 +154,14 @@ Resources:
           TargetGroupArn: !Ref NginxIntNLBTGroup
       NetworkConfiguration:
         AwsvpcConfiguration:
-            SecurityGroups:
-                - !Ref NginxSecurityGroup
-            Subnets:
-                - !Ref PrivateSubnet1
-                - !Ref PrivateSubnet2
-                - !Ref PrivateSubnet3
+          SecurityGroups:
+            - !Ref NginxSecurityGroup
+          Subnets:
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
+            - !Ref PrivateSubnet3
       SchedulingStrategy: REPLICA
       TaskDefinition: !Ref NginxTask
-
-##
-# Security
-##
-
   NginxSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -218,12 +181,11 @@ Resources:
       Tags:
         - Key: Name
           Value: Nginx SG
-
   NginxTaskExecRole:
     Type: 'AWS::IAM::Role'
     Properties:
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Principal:
@@ -235,14 +197,14 @@ Resources:
       Policies:
         - PolicyName: ecs-actions
           PolicyDocument:
-            Version: "2012-10-17"
+            Version: 2012-10-17
             Statement:
               - Effect: Allow
-                Action: 
-                  -  'ecr:GetAuthorizationToken'
-                  -  'ecr:BatchCheckLayerAvailability'
-                  -  'ecr:GetDownloadUrlForLayer'
-                  -  'ecr:BatchGetImage'
-                  -  'logs:CreateLogStream'
-                  -  'logs:PutLogEvents'
+                Action:
+                  - 'ecr:GetAuthorizationToken'
+                  - 'ecr:BatchCheckLayerAvailability'
+                  - 'ecr:GetDownloadUrlForLayer'
+                  - 'ecr:BatchGetImage'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
                 Resource: '*'
