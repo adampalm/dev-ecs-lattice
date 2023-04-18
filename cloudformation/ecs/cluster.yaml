@@ -171,6 +171,10 @@ NginxTask:
 
 NginxService:
   Type: 'AWS::ECS::Service'
+  DependsOn:
+    - NginxIntNLBListener
+  DependsOn:
+    - NginxExtNLBListener
   Properties:
     Cluster: !Ref NginxCluster
     DesiredCount: 3
