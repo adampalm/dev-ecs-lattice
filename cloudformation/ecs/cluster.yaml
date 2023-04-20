@@ -164,6 +164,8 @@ Resources:
           PortMappings:
             - ContainerPort: 443
               Protocol: tcp
+            - ContainerPort: 80
+              Protocol: tcp
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -267,17 +269,17 @@ Resources:
                 Resource: '*'
 Outputs:
   VpcId:
-    Description: ECS Internal Load Balancer Name
+    Description: ECS VPC ID
     Value: !Ref VpcId
     Export:
-      Name: !Sub ${AWS::StackName}-VpcId"
+      Name: !Sub ${AWS::StackName}-VpcId
   NginxExtNLB:
     Description: ECS External Load Balancer Name
     Value: !GetAtt NginxExtNLB.DNSName
     Export:
-      Name: !Sub ${AWS::StackName}-NginxExtNLB"
+      Name: !Sub ${AWS::StackName}-NginxExtNLB
   NginxIntNLB:
     Description: ECS Internal Load Balancer Name
     Value: !GetAtt NginxIntNLB.DNSName
     Export:
-      Name: !Sub ${AWS::StackName}-NginxIntNLB"
+      Name: !Sub ${AWS::StackName}-NginxIntNLB
