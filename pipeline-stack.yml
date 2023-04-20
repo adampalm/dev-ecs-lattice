@@ -402,8 +402,8 @@ Resources:
               ActionMode: CHANGE_SET_REPLACE
               Capabilities: CAPABILITY_IAM
               RoleArn: !GetAtt CPipelineCloudFormationRole.Arn
-              StackName: !Sub ${AWS::StackName}-lattice-ingress-cluster
-              ChangeSetName: !Sub ${AWS::StackName}-lattice-ingress-cluster-cset
+              StackName: !Sub ${AWS::StackName}-${AWS::AccountID}-ecs
+              ChangeSetName: !Sub ${AWS::StackName}-${AWS::AccountID}-ecs-cset
               TemplatePath: SourceArtifact::cloudformation/ecs/cluster.yaml
               ParameterOverrides: !Sub |
                 {
@@ -426,9 +426,9 @@ Resources:
               Version: '1'
             Configuration:
               ActionMode: CHANGE_SET_EXECUTE
-              ChangeSetName: !Sub ${AWS::StackName}-lattice-ingress-cluster-cset
+              ChangeSetName: !Sub ${AWS::StackName}-${AWS::AccountID}-ecs-cset
               RoleArn: !GetAtt CPipelineCloudFormationRole.Arn
-              StackName: !Sub ${AWS::StackName}-lattice-ingress-cluster
+              StackName: !Sub ${AWS::StackName}-${AWS::AccountID}-ecs
             RunOrder: 2
 
   CPipelineCloudWatchEventRole:

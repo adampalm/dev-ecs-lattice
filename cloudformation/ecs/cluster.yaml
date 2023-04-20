@@ -41,7 +41,7 @@ Resources:
     Type: 'AWS::Logs::LogGroup'
     Properties:
       LogGroupName: !Sub '/${NginxCluster}'
-  NginxExtNLBTGroup:
+  NginxExtNLBTGroup443:
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
     Properties:
       HealthCheckIntervalSeconds: 5
@@ -49,6 +49,18 @@ Resources:
       HealthyThresholdCount: 3
       IpAddressType: ipv4
       Port: 443
+      Protocol: TCP
+      TargetType: ip
+      UnhealthyThresholdCount: 3
+      VpcId: !Ref VpcId
+  NginxExtNLBTGroup80:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      HealthCheckIntervalSeconds: 5
+      HealthCheckTimeoutSeconds: 2
+      HealthyThresholdCount: 3
+      IpAddressType: ipv4
+      Port: 80
       Protocol: TCP
       TargetType: ip
       UnhealthyThresholdCount: 3
@@ -63,16 +75,25 @@ Resources:
         - !Ref PublicSubnet2
         - !Ref PublicSubnet3
       Type: network
-  NginxExtNLBListener:
+  NginxExtNLBListener443:
     Type: 'AWS::ElasticLoadBalancingV2::Listener'
     Properties:
       DefaultActions:
-        - TargetGroupArn: !Ref NginxExtNLBTGroup
+        - TargetGroupArn: !Ref NginxExtNLBTGroup443
           Type: forward
       LoadBalancerArn: !Ref NginxExtNLB
       Port: 443
       Protocol: TCP
-  NginxIntNLBTGroup:
+  NginxExtNLBListener80:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref NginxExtNLBTGroup80
+          Type: forward
+      LoadBalancerArn: !Ref NginxExtNLB
+      Port: 80
+      Protocol: TCP
+  NginxIntNLBTGroup443:
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
     Properties:
       HealthCheckIntervalSeconds: 5
@@ -80,6 +101,18 @@ Resources:
       HealthyThresholdCount: 3
       IpAddressType: ipv4
       Port: 443
+      Protocol: TCP
+      TargetType: ip
+      UnhealthyThresholdCount: 3
+      VpcId: !Ref VpcId
+  NginxIntNLBTGroup80:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      HealthCheckIntervalSeconds: 5
+      HealthCheckTimeoutSeconds: 2
+      HealthyThresholdCount: 3
+      IpAddressType: ipv4
+      Port: 80
       Protocol: TCP
       TargetType: ip
       UnhealthyThresholdCount: 3
@@ -94,14 +127,23 @@ Resources:
         - !Ref PrivateSubnet2
         - !Ref PrivateSubnet3
       Type: network
-  NginxIntNLBListener:
+  NginxIntNLBListener443:
     Type: 'AWS::ElasticLoadBalancingV2::Listener'
     Properties:
       DefaultActions:
-        - TargetGroupArn: !Ref NginxIntNLBTGroup
+        - TargetGroupArn: !Ref NginxIntNLBTGroup443
           Type: forward
       LoadBalancerArn: !Ref NginxIntNLB
       Port: 443
+      Protocol: TCP
+  NginxIntNLBListener80:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref NginxIntNLBTGroup80
+          Type: forward
+      LoadBalancerArn: !Ref NginxIntNLB
+      Port: 80
       Protocol: TCP
   NginxCluster:
     Type: 'AWS::ECS::Cluster'
@@ -173,6 +215,11 @@ Resources:
           FromPort: 443
           ToPort: 443
           Description: Ingress rule for tcp 443
+        - CidrIp: !Ref VpcCidr
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          Description: Ingress rule for tcp 80
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
           IpProtocol: '-1'
@@ -208,3 +255,19 @@ Resources:
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
                 Resource: '*'
+Outputs:
+  VpcId:
+    Description: ECS Internal Load Balancer Name
+    Value: !Ref VpcId
+    Export:
+      Name: !Sub ${AWS::StackName}-VpcId"
+  NginxExtNLB:
+    Description: ECS External Load Balancer Name
+    Value: !GetAtt NginxExtNLB.DNSName
+    Export:
+      Name: !Sub ${AWS::StackName}-NginxExtNLB"
+  NginxIntNLB:
+    Description: ECS Internal Load Balancer Name
+    Value: !GetAtt NginxIntNLB.DNSName
+    Export:
+      Name: !Sub ${AWS::StackName}-NginxIntNLB"
