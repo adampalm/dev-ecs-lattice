@@ -180,9 +180,13 @@ Resources:
   NginxService:
     Type: 'AWS::ECS::Service'
     DependsOn:
-      - NginxIntNLBListener
+      - NginxIntNLBListener443
     DependsOn:
-      - NginxExtNLBListener
+      - NginxExtNLBListener443
+    DependsOn:
+      - NginxIntNLBListener80
+    DependsOn:
+      - NginxExtNLBListener80
     Properties:
       Cluster: !Ref NginxCluster
       DesiredCount: 3
@@ -190,10 +194,16 @@ Resources:
       LoadBalancers:
         - ContainerName: Nginx
           ContainerPort: 443
-          TargetGroupArn: !Ref NginxExtNLBTGroup
+          TargetGroupArn: !Ref NginxExtNLBTGroup443
         - ContainerName: Nginx
           ContainerPort: 443
-          TargetGroupArn: !Ref NginxIntNLBTGroup
+          TargetGroupArn: !Ref NginxIntNLBTGroup443
+        - ContainerName: Nginx
+          ContainerPort: 80
+          TargetGroupArn: !Ref NginxExtNLBTGroup80
+        - ContainerName: Nginx
+          ContainerPort: 80
+          TargetGroupArn: !Ref NginxIntNLBTGroup80
       NetworkConfiguration:
         AwsvpcConfiguration:
           SecurityGroups:
