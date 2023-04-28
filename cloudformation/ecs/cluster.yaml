@@ -172,6 +172,10 @@ Resources:
               awslogs-region: !Ref 'AWS::Region'
               awslogs-group: !Ref NginxLogGroup
               awslogs-stream-prefix: lattice-ingress
+          Ulimits:
+            - HardLimit: 1048576
+              Name: nofile
+              SoftLimit: 1048576
       Cpu: 1024
       Memory: 2048
       RequiresCompatibilities:
