@@ -176,8 +176,8 @@ Resources:
             - HardLimit: 1048576
               Name: nofile
               SoftLimit: 1048576
-      Cpu: 1024
-      Memory: 2048
+      Cpu: 2048
+      Memory: 4096
       RequiresCompatibilities:
         - FARGATE
       RuntimePlatform:
@@ -237,7 +237,7 @@ Resources:
           ToPort: 80
           Description: Ingress rule for tcp 80
       SecurityGroupEgress:
-        - CidrIp: 0.0.0.0/0
+        - CidrIp: 169.254.171/24
           IpProtocol: '-1'
           FromPort: -1
           ToPort: -1
