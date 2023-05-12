@@ -648,8 +648,8 @@ Resources:
       ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.dkr
       SubnetIds: 
         - !Ref PrivateSubnet1
-          !Ref PrivateSubnet2
-          !Ref PrivateSubnet3
+        - !Ref PrivateSubnet2
+        - !Ref PrivateSubnet3
       VpcEndpointType: Interface
       VpcId: !Ref VPC
 
@@ -662,8 +662,8 @@ Resources:
       ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.api
       SubnetIds: 
         - !Ref PrivateSubnet1
-          !Ref PrivateSubnet2
-          !Ref PrivateSubnet3
+        - !Ref PrivateSubnet2
+        - !Ref PrivateSubnet3
       VpcEndpointType: Interface
       VpcId: !Ref VPC
 
@@ -676,19 +676,18 @@ Resources:
       ServiceName: !Sub com.amazonaws.${AWS::Region}.logs
       SubnetIds: 
         - !Ref PrivateSubnet1
-          !Ref PrivateSubnet2
-          !Ref PrivateSubnet3
+        - !Ref PrivateSubnet2
+        - !Ref PrivateSubnet3
       VpcEndpointType: Interface
       VpcId: !Ref VPC
 
   S3GatewayEndpoint:
     Type: AWS::EC2::VPCEndpoint
     Properties: 
-      PrivateDnsEnabled: true
       RouteTableIds: 
         - !Ref PrivateSubnet1RouteTable
-          !Ref PrivateSubnet2RouteTable
-          !Ref PrivateSubnet3RouteTable
+        - !Ref PrivateSubnet2RouteTable
+        - !Ref PrivateSubnet3RouteTable
       ServiceName: !Sub com.amazonaws.${AWS::Region}.s3
       VpcEndpointType: Gateway
       VpcId: !Ref VPC
